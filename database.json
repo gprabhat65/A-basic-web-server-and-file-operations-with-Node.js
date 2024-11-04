@@ -1,0 +1,53 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Kumar Chaudhary",
+      "email": "22ad024@kpriet.ac.in",
+      "roll_no": "22ad024",
+      "department": "AD"
+    },
+    {
+      "id": 2,
+      "name": "Sulav Kumar Shrestha",
+      "email": "22ad057@kpriet.ac.in",
+      "roll_no": "57",
+      "department": "AI&DS"
+    },
+    {
+      "id": 3,
+      "name": "K F Surya",
+      "email": "22ad056@kpriet.ac.in",
+      "roll_no": "22ad056",
+      "department": "AD"
+    },
+    {
+      "id": 5,
+      "name": "Eve",
+      "email": "eve@example.com",
+      "roll_no": "105",
+      "department": "Biology"
+    },
+    {
+      "name": "Prabhat Kumar Gupta",
+      "email": "gprabhat65@gmail.com",
+      "roll_no": "35",
+      "department": "AD",
+      "id": 6
+    },
+    {
+      "name": "Bibek Chaudhary",
+      "email": "22ad011@kpriet.ac.in",
+      "roll_no": "11",
+      "department": "AD",
+      "id": 7
+    },
+    {
+      "name": "Aasish Shrestha",
+      "email": "22ad001@kpriet.ac.in",
+      "roll_no": "22ad035",
+      "department": "AD",
+      "id": 8
+    }
+  ]
+}

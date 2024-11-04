@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #007BFF;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #343a40;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px; /* Gentle width for the forms */
+            margin: 0 auto; /* Center the container */
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #007BFF;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #e2e3e5;
+            color: #495057;
+            display: none; /* Initially hidden */
+        }
+
+        .user-list {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .user-item {
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: #f8f9fa;
+            width: 100%;
+            max-width: 500px; /* Consistent width for user items */
+            transition: transform 0.2s;
+        }
+
+        .user-item:hover {
+            transform: scale(1.02);
+        }
+
+        .error-message {
+            color: #dc3545;
+        }
+
+        .success-message {
+            color: #28a745;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>KPR IET</h1>
+    <h1>Student Management</h1>
+
+    <h2>Add New Student</h2>
+    <form id="studentForm">
+        <input type="text" id="name" placeholder="Name" required>
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="text" id="roll_no" placeholder="Roll No" required>
+        <input type="text" id="department" placeholder="Department" required>
+        <button type="submit">Add Student</button>
+    </form>
+
+    <h2>Update Student</h2>
+    <form id="updateForm">
+        <input type="number" id="updateId" placeholder="Student ID" required>
+        <input type="text" id="updateName" placeholder="New Name">
+        <input type="email" id="updateEmail" placeholder="New Email">
+        <input type="text" id="updateRollNo" placeholder="New Roll No">
+        <input type="text" id="updateDepartment" placeholder="New Department">
+        <button type="submit">Update Student</button>
+    </form>
+
+    <h2>Delete Student</h2>
+    <form id="deleteForm">
+        <input type="text" id="deleteIdentifier" placeholder="ID or Roll No" required>
+        <button type="submit">Delete Student</button>
+    </form>
+
+    <h2>Display Students</h2>
+    <p>To display student details, please provide the student ID or Roll Number:</p>
+    <input type="text" id="displayIdentifier" placeholder="ID or Roll No" required>
+    <button id="displayButton">Display Student</button>
+
+    <div class="result" id="result"></div>
+    <div class="user-list" id="userList"></div>
+</div>
+
+<script>
+    const form = document.getElementById('studentForm');
+    const resultDiv = document.getElementById('result');
+    const updateForm = document.getElementById('updateForm');
+    const deleteForm = document.getElementById('deleteForm');
+    const userListDiv = document.getElementById('userList');
+    const displayIdentifier = document.getElementById('displayIdentifier');
+
+    const fetchUserByIdentifier = async (identifier) => {
+        const response = await fetch('/api/users');
+        const users = await response.json();
+        const user = users.find(u => u.id === parseInt(identifier, 10) || u.roll_no === identifier);
+
+        if (user) {
+            userListDiv.innerHTML = `
+                <div class="user-item">
+                    <strong>ID:</strong> ${user.id} <br>
+                    <strong>Name:</strong> ${user.name} <br>
+                    <strong>Email:</strong> ${user.email} <br>
+                    <strong>Roll No:</strong> ${user.roll_no} <br>
+                    <strong>Department:</strong> ${user.department} <br>
+                </div>
+            `;
+        } else {
+            userListDiv.innerHTML = `<strong class="error-message">No student found with ID or Roll No: ${identifier}</strong>`;
+        }
+    };
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const roll_no = document.getElementById('roll_no').value;
+        const department = document.getElementById('department').value;
+
+        const response = await fetch('/api/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, email, roll_no, department }),
+        });
+
+        const data = await response.json();
+
+        resultDiv.style.display = 'block'; // Show the result div
+        if (response.ok) {
+            resultDiv.innerHTML = `<strong class="success-message">${data.message}</strong><br>Student ID: ${data.user.id}`;
+            form.reset();
+        } else {
+            resultDiv.innerHTML = `<strong class="error-message">Error: ${data.message}</strong>`;
+        }
+    });
+
+    updateForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const id = document.getElementById('updateId').value;
+        const updateData = {
+            name: document.getElementById('updateName').value,
+            email: document.getElementById('updateEmail').value,
+            roll_no: document.getElementById('updateRollNo').value,
+            department: document.getElementById('updateDepartment').value
+        };
+
+        const response = await fetch(`/api/users/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updateData),
+        });
+
+        const data = await response.json();
+        resultDiv.style.display = 'block'; // Show the result div
+        resultDiv.innerHTML = `<strong class="success-message">${data.message}</strong>`;
+        updateForm.reset();
+    });
+
+    deleteForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const identifier = document.getElementById('deleteIdentifier').value;
+
+        const response = await fetch('/api/users', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: identifier,
+                roll_no: identifier
+            }),
+        });
+
+        const data = await response.json();
+        resultDiv.style.display = 'block'; // Show the result div
+        resultDiv.innerHTML = `<strong class="success-message">${data.message}</strong>`;
+        deleteForm.reset();
+    });
+
+    document.getElementById('displayButton').addEventListener('click', () => {
+        const identifier = displayIdentifier.value;
+        fetchUserByIdentifier(identifier);
+    });
+</script>
+
+</body>
+</html>
